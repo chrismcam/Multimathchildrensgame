@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Math Game Registration</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="index.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+<div class="header">
+<ul>
+<li><img src="Content/logo.jpg" alt="geometrical shapes" height="80" width="100"></li>
+<li><a href="#"><p class="game-name">MultiMath</p>
+<p id="remark">See how many you can score</p></a>
+</li>
+<li><button type="button" name="stats" id="stats" onclick="findPercentageScore()">Player<br>Stats</button></li>
+</ul>
+</div>
+
+<div class="container">
+
+<div class="left-side">
+  <h2 class='player-welcome'>Welcome </h2>
+  <p id="player-name" class='player-welcome'></p><br><br><br>
+  <div class="calc"></div>
+  <p class="registration">Please register before playing</p>
+  <form name="form1" action="#" method="post">
+    <p style="text-align: center; margin-top: 20px; color: purple; font-size: 34px" >Registration</p><br>
+    <label>First Name:</label> <input type="text" name="tb1" id="firstName" minlength="3" required style="margin-left: 40px;"><br><br>
+    <label>Last Name:</label> <input type="text" name="tb2" id="lastName" minlength="3" required style="margin-left: 41px;"><br><br>
+    <label>Date of Birth:</label> <input type="date" name="tb3" id="dob" required style="margin-left: 26px;"><br><br>
+    <label>Email Address:</label> <input type="email" name="tb4" id="email" required style="margin-left: 17px;"><br><br>
+    <label>Age:</label> <input type="number" name="tb5" id="age" disabled style="margin-left: 83px;"><br><br>
+    <label>Please identify your gender:</label><br><br>
+    <label>Male</label> <input type="radio" name="gender" value="Male" style="margin-left: 18px;"><br><br>
+    <label>Female</label> <input type="radio" name="gender" value="Female"><br><br><br>
+    <input type="button" value="Register" onclick="Register()" id="registerButton" class="registerButton">
+    <button type="button" onclick="PlayGame()" id="registrationNextButton" disabled>Next</button>
+  
+<div class='loading-frame'>
+  <div class='circle'></div>
+  <div class='circle'></div>
+  <div class='circle'></div>
+  <div class='circle'></div>
+  <div class='circle'></div>
+  <div class='circle'></div>
+  <div class='circle'></div>
+  <div class='circle'></div>
+  <div class='circle'></div>
+  <div class='circle'></div>
+</div>
+  </form>
+</div>
+
+<div class="right-side" >
+<div class="banner">
+</div>
+<button type="button" class="play-game" name="startButton" id="startButton" onclick="startGame()" disabled>Start</button><br><br>
+
+
+      <div id="playArea" style="display: none">
+
+        <p id="mathProblem"></p>
+
+        <p class="ans">Answer: </p><input type="text" id="answerInput" size="14" disabled ><br><br>
+
+        
+ 
+        <button type="button" id="isCorrect" onclick="checkAnswer(event)">Check Answer</button><br><br>
+        Tries Left: <span id="triesLeft">3</span><br>
+
+      </div><br><br>
+<button type="button" onclick="endGame()" id="endButton" disabled>End</button>
+<br><br><br><br><br><br><br><br><br>
+
+<!-- <button type="button" class="showPercent" name="percentage" id="percentage" onclick="">Show players</button><br> -->
+<textarea id="showpercentage" rows="10" cols="50" readonly></textarea><br><br><br><br><br><br><br><br><br>
+
+<!-- 
+<button type="button" class="showPlayers" name="showallplayers" id="showallplayers" onclick="">Show players</button><br> 
+<button type="button" class="showCharts" name="chart" id="chart" onclick="">Show Charts</button><br> -->
+<textarea name="showallplayers" id="showallplayers"></textarea><br><br><br><br><br><br><br><br><br>
+
+
+<div id="chartArea">
+<!-- <textarea name="chartArea" id="chartArea"></textarea> -->
+</div>
+</div>
+</div>
+
+
+  <script>
+        var PlayerRegistrationData = [];
+        var answer;
+        var remainingTries;
+        var incorrectAnswers = 0;
+
+        function calculateAge(dateOfBirth) {
+          var today = new Date();
+          var birthDate = new Date(dateOfBirth);
+          var age = today.getFullYear() - birthDate.getFullYear();
+          var m = today.getMonth() - birthDate.getMonth();
+          if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+          }
+          return age;
+        }
+
+        function Register() {
+          var firstName = document.getElementById("firstName").value;
+          var lastName = document.getElementById("lastName").value;
+          var dob = document.getElementById("dob").value;
+          var email = document.getElementById("email").value.toLowerCase();
+          var gender = document.querySelector(
+            'input[name="gender"]:checked'
+          ).value;
+
+          var age = calculateAge(dob);
+
+          if (age < 8 || age > 12) {
+            alert("Age must be between 8 and 12 inclusive.");
+            return;
+          }
+
+          if (firstName.length < 3 || lastName.length < 3) {
+            alert(
+              "First and Last Name must be more than three (3) characters in length."
+            );
+            return;
+          }
+
+          if (!email.endsWith("@gmail.com")) {
+            alert("Please use a Gmail email address.");
+            return;
+          }
+
+          document.getElementById("age").value = age;
+
+          var registrationData = {
+            firstName: firstName,
+            lastName: lastName,
+            dateOfBirth: dob,
+            email: email,
+            age: age,
+            gender: gender,
+            result: "", // Initialize result property
+            game: [],
+          };
+
+          PlayerRegistrationData.push(registrationData);
+          localStorage.setItem(
+            "PlayerRegistrationData",
+            JSON.stringify(PlayerRegistrationData)
+          );
+
+          document.getElementById("firstName").disabled = true;
+          document.getElementById("lastName").disabled = true;
+          document.getElementById("dob").disabled = true;
+          document.getElementById("email").disabled = true;
+          document.getElementById("age").disabled = true;
+          document.querySelector('input[value="Male"]').disabled = true;
+          document.querySelector('input[value="Female"]').disabled = true;
+          document.getElementById("registerButton").disabled = true;
+
+          document.getElementById("startButton").disabled = false;
+          document.getElementById("endButton").disabled = false;
+
+          alert("Registration successful!");
+
+          // Call PlayGame with the registrationData object
+          PlayGame();
+        }
+        // Task 4 
+        function PlayGame() {
+          if (incorrectAnswers > 3) {
+            alert(
+              "Game Over! You have reached the maximum number of incorrect answers."
+            );
+            endGame(); // End the game if the user has 3 incorrect answers
+            return;
+          }
+
+          remainingTries = 3; // Reset remaining tries for each new question
+          updateTriesDisplay(); // Update the display of remaining tries
+
+          var gameNumber1 = Math.ceil(Math.random() * 9);
+          var gameNumber2 = Math.ceil(Math.random() * 5);
+          var symbol;
+
+          var temp4 = Math.ceil(Math.random() * 4);
+          if (temp4 == 1) {
+            symbol = "+";
+            answer = gameNumber1 + gameNumber2;
+          } else if (temp4 == 2) {
+            symbol = "-";
+            answer = gameNumber1 - gameNumber2;
+          } else if (temp4 == 3) {
+            symbol = "/";
+            answer = gameNumber1 / gameNumber2;
+          } else if (temp4 == 4) {
+            symbol = "x";
+            answer = gameNumber1 * gameNumber2;
+          }
+        //END OF TASK 4
+          document.getElementById("mathProblem").innerHTML =
+            gameNumber1 + " " + symbol + " " + gameNumber2;
+          document.getElementById("answerInput").value = "";
+          document.getElementById("answerInput").disabled = false;
+          document.getElementById("isCorrect").disabled = false;
+          document.getElementById("registrationNextButton").disabled = false;
+          }
+        //TASK 6:
+        function checkAnswer(e) {
+          e.preventDefault();
+          var userAnswer = parseInt(
+            document.getElementById("answerInput").value,
+            10
+          );
+          var correctAnswer = parseInt(answer, 10);
+
+          if (userAnswer === correctAnswer) { 
+            alert("Correct!");
+            document.getElementById("answerInput").disabled = true;
+            document.getElementById("isCorrect").disabled = true;
+            document.getElementById("registrationNextButton").disabled = false;
+            console.log(
+              PlayerRegistrationData[PlayerRegistrationData.length - 1]
+            );
+            PlayerRegistrationData[PlayerRegistrationData.length - 1].game.push(
+              1
+            );
+
+            // Check if all questions have been answered correctly and there are remaining questions
+            if (incorrectAnswers === 0 && remainingTries > 0) {
+              PlayerRegistrationData[PlayerRegistrationData.length - 1].result =
+                "Correct"; // Update result
+            } else if (incorrectAnswers === 0 && remainingTries === 0) {
+              alert(
+                "Congratulations! You have answered all questions correctly."
+              );
+            }
+          } else if (userAnswer != correctAnswer) {
+            remainingTries--;
+            PlayerRegistrationData[PlayerRegistrationData.length - 1].game.push(
+              0
+            );
+            alert("Incorrect. Tries remaining: " + remainingTries);
+
+            if (remainingTries === 0) {
+              incorrectAnswers++;
+              alert(
+                "Sorry, you have run out of tries. The correct answer is " +
+                  correctAnswer
+              );
+              document.getElementById("answerInput").disabled = true;
+              document.getElementById("isCorrect").disabled = true;
+              document.getElementById(
+                "registrationNextButton"
+              ).disabled = false;
+
+              // Check if the maximum number of incorrect answers is reached
+              if (incorrectAnswers === 3) {
+                alert(
+                  "Game Over! You have reached the maximum number of incorrect answers."
+                );
+                // You can choose to end the game here, or allow the user to continue
+                // Play the next question
+                PlayGame();
+              } else {
+                updateTriesDisplay();
+              }
+            } else {
+              updateTriesDisplay();
+            }
+            document.getElementById("answerInput").value = " ";
+          }
+        }
+
+        function updateTriesDisplay() {
+          document.getElementById("triesLeft").innerText = remainingTries;
+        }
+
+        function startGame() {
+          var registrationData =
+            PlayerRegistrationData[PlayerRegistrationData.length - 1];
+
+          // Check if the game is not already in progress for the current user
+          if (!registrationData.gameInProgress) {
+            PlayGame(); // Pass registrationData to PlayGame
+            registrationData.gameInProgress = true; // Mark that the game is in progress
+          } else {
+            alert("Game is already in progress for this user.");
+            return;
+          }
+
+          // Enable play area, answer input, Check Answer, and Next button
+          document.getElementById("playArea").style.display = "block";
+          document.getElementById("answerInput").disabled = false;
+          document.getElementById("isCorrect").disabled = false;
+          document.getElementById("registrationNextButton").disabled = false; // Updated ID
+
+          // Disable the Register button
+          document.getElementById("registerButton").disabled = true;
+
+          // Enable the End button
+          document.getElementById("endButton").disabled = false;
+        }
+
+        function endGame() {
+          var registrationData =
+            PlayerRegistrationData[PlayerRegistrationData.length - 1];
+          findPercentageScore(); // Task 11: Call findPercentageScore
+          registrationData.result = "Game Over"; // Update the result
+
+          document.getElementById("firstName").value = "";
+          document.getElementById("lastName").value = "";
+          document.getElementById("dob").value = "";
+          document.getElementById("email").value = "";
+          document.querySelector(
+            'input[name="gender"]:checked'
+          ).checked = false;
+
+          document.getElementById("firstName").disabled = false;
+          document.getElementById("lastName").disabled = false;
+          document.getElementById("dob").disabled = false;
+          document.getElementById("email").disabled = false;
+          document.getElementById("age").disabled = false;
+          document.querySelector('input[value="Male"]').disabled = false;
+          document.querySelector('input[value="Female"]').disabled = false;
+          document.getElementById("registerButton").disabled = false;
+
+          document.getElementById("startButton").disabled = true;
+          document.getElementById("endButton").disabled = true;
+          document.getElementById("playArea").style.display = "none";
+        }
+
+        // Task 10: findPercentageScore function
+        function findPercentageScore() {
+          // Clear the 'showpercentage' display area
+          document.getElementById("showpercentage").value = "";
+
+          // Calculate and display total number of questions, correct answers, and percentage score
+          let t = PlayerRegistrationData.length - 1;
+          var totalQuestions = PlayerRegistrationData[t].game.length; // Subtract 1 to exclude the registration entry
+          var correctAnswers = 0;
+
+          for (var i = t; i < PlayerRegistrationData.length; i++) {
+            console.log(i);
+            let lst = PlayerRegistrationData[i].game;
+            for (let z = 0; z < lst.length; z++) {
+              if (lst[z] === 1) {
+                correctAnswers += 1;
+              }
+            }
+            // if (PlayerRegistrationData[i]. === "Correct") {
+            //   correctAnswers += 1;
+            // }
+          }
+
+          console.log(correctAnswers);
+
+          var percentageScore = (correctAnswers / totalQuestions) * 100;
+
+          // Display the data in 'showpercentage' display area
+          document.getElementById("showpercentage").value =
+            "Player Name: " +
+            PlayerRegistrationData[t].firstName +
+            " " +
+            PlayerRegistrationData[t].lastName +
+            "\n" +
+            "Date: " +
+            new Date().toLocaleDateString() +
+            "\n" +
+            "Total Questions: " +
+            totalQuestions +
+            "\n" +
+            "Correct Answers: " +
+            correctAnswers +
+            "\n" +
+            "Percentage Score: " +
+            percentageScore.toFixed(2) +
+            "%";
+        }
+
+        let whoPlaying = document.getElementById("firstName").value;
+        document.getElementById("player-name").innerHTML = whoPlaying;
+
+/*
+//Show all stats
+function showAllStats() {
+document.getElementById(&#39;showallplayers&#39;).value = &#39;&#39;;
+
+PlayerRegistrationData.forEach(function(player) {
+// Extract relevant information for each player
+var firstName = player.firstName;
+var lastName = player.lastName;
+var age = player.age;
+var game = player.game;
+var result = player.result;
+
+var totalQuestions = game.length;
+var correctAnswers = game.filter(answer =&gt; answer === 1).length;
+var percentageScore = ((correctAnswers / totalQuestions) * 100).toFixed(2);
+
+var playerInfo = firstName + &#39; &#39; + lastName + &#39;, Age: &#39; + age + &#39;, Correct Answers: &#39; +
+correctAnswers + &#39;/&#39; + totalQuestions + &#39;, Status: &#39; + result + &#39;, Percentage Score: &#39; +
+percentageScore + &#39;%\n&#39;;
+
+document.getElementById(&#39;showallplayers&#39;).value += playerInfo;
+}
+}
+
+*/
+
+ 
+  </script>
+</body>
+
+</html>
