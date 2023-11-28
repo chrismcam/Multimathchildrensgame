@@ -388,32 +388,29 @@
         let whoPlaying = document.getElementById("firstName").value;
         document.getElementById("player-name").innerHTML = whoPlaying;
 
-/*
-//Show all stats
-function showAllStats() {
-document.getElementById(&#39;showallplayers&#39;).value = &#39;&#39;;
 
-PlayerRegistrationData.forEach(function(player) {
-// Extract relevant information for each player
-var firstName = player.firstName;
-var lastName = player.lastName;
-var age = player.age;
-var game = player.game;
-var result = player.result;
+        function showAllStats() {
+  document.getElementById('showallplayers').value = '';
 
-var totalQuestions = game.length;
-var correctAnswers = game.filter(answer =&gt; answer === 1).length;
-var percentageScore = ((correctAnswers / totalQuestions) * 100).toFixed(2);
+  PlayerRegistrationData.forEach(function(player) {
+    // Extract relevant information for each player
+    var firstName = player.firstName;
+    var lastName = player.lastName;
+    var age = player.age;
+    var game = player.game;
+    var result = player.result;
 
-var playerInfo = firstName + &#39; &#39; + lastName + &#39;, Age: &#39; + age + &#39;, Correct Answers: &#39; +
-correctAnswers + &#39;/&#39; + totalQuestions + &#39;, Status: &#39; + result + &#39;, Percentage Score: &#39; +
-percentageScore + &#39;%\n&#39;;
+    var totalQuestions = game.length;
+    var correctAnswers = game.filter(answer => answer === 1).length;
+    var percentageScore = ((correctAnswers / totalQuestions) * 100).toFixed(2);
 
-document.getElementById(&#39;showallplayers&#39;).value += playerInfo;
+    var playerInfo = firstName + ' ' + lastName + ', Age: ' + age + ', Correct Answers: ' +
+      correctAnswers + '/' + totalQuestions + ', Status: ' + result + ', Percentage Score: ' +
+      percentageScore + '%\n';
+
+    document.getElementById('showallplayers').value += playerInfo;
+  });
 }
-}
-
-*/
 
  
   </script>
